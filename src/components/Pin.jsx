@@ -8,8 +8,6 @@ import { BsFillArrowUpRightCircleFill } from "react-icons/bs";
 import { client, urlFor } from "../client";
 
 const Pin = ({ pin }) => {
-  console.log(pin);
-
   const { postedBy, image, _id, destination } = pin;
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);

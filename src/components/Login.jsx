@@ -22,8 +22,6 @@ const Login = () => {
   }, []);
 
   const responseGoogle = (response) => {
-    console.log(response);
-
     localStorage.setItem("user", JSON.stringify(response.profileObj));
     const { name, googleId, imageUrl } = response.profileObj;
     const doc = {
