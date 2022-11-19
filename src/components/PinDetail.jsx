@@ -39,6 +39,7 @@ const PinDetail = ({ user }) => {
 
   useEffect(() => {
     fetchPinDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pinId]);
 
   const addComment = () => {
@@ -81,7 +82,7 @@ const PinDetail = ({ user }) => {
           className="flex xl:flex-row flex-col m-auto bg-white"
           style={{ maxWidth: "1500px", borderRadius: "32px" }}
         >
-          <div className="flex justify-center items-center md:items-start flex-initial">
+          <div className="m-5 flex justify-center items-center md:items-start flex-initial">
             <img
               className="rounded-t-3xl rounded-b-lg"
               src={pinDetail?.image && urlFor(pinDetail?.image).url()}
@@ -131,11 +132,13 @@ const PinDetail = ({ user }) => {
                   className="flex items-center gap-2 mt-5 bg-white rounded-lg"
                   key={item.comment}
                 >
-                  <img
-                    src={item.postedBy?.image}
-                    alt="user-profile"
-                    className="w-10 h-10 rounded-full cursor-pointer"
-                  />
+                  <Link to={`/user-profile/${item.postedBy._id}`}>
+                    <img
+                      src={item.postedBy?.image}
+                      alt="user-profile"
+                      className="w-10 h-10 rounded-full cursor-pointer"
+                    />
+                  </Link>
                   <div className="flex flex-col">
                     <p>{item.postedBy?.userName}</p>
                     <p className="font-bold">{item.comment}</p>
@@ -148,8 +151,8 @@ const PinDetail = ({ user }) => {
               <Link to={`/user-profile/${user._id}`}>
                 <img
                   src={user.image}
-                  alt="user-profile"
                   className="w-10 h-10 rounded-full cursor-pointer"
+                  alt="user-profile"
                 />
               </Link>
               <input
