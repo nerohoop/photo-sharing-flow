@@ -8,7 +8,7 @@ import MasonryLayout from "./MasonryLayout";
 import { pinDetailMorePinQuery, pinDetailQuery } from "../utils/data";
 import Spinner from "./Spinner";
 
-const PinDetail = ({ pin }) => {
+const PinDetail = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [pinDetail, setPinDetail] = useState();
   const [pins, setPins] = useState();
@@ -25,11 +25,11 @@ const PinDetail = ({ pin }) => {
       client.fetch(`${query}`).then((data) => {
         setPinDetail(data[0]);
         setLoading(false);
-        console.log(data[0]);
 
         if (data[0]) {
           const query1 = pinDetailMorePinQuery(data[0]);
           client.fetch(query1).then((res) => {
+            console.log(res);
             setPins(res);
           });
         }
@@ -41,7 +41,30 @@ const PinDetail = ({ pin }) => {
     fetchPinDetails();
   }, [pinId]);
 
-  const addComment = (co) => {};
+  const addComment = () => {
+    if (!comment) {
+      return;
+    }
+
+    setAddingComment(true);
+
+    client
+      .patch(pinId)
+      .setIfMissing({ comments: [] })
+      .insert("after", "comments[-1]", [
+        {
+          comment,
+          _key: uuidv4(),
+          postedBy: { _type: "postedBy", _ref: user._id },
+        },
+      ])
+      .commit()
+      .then(() => {
+        fetchPinDetails();
+        setComment("");
+        setAddingComment(false);
+      });
+  };
 
   if (loading) {
     return (
@@ -102,6 +125,50 @@ const PinDetail = ({ pin }) => {
             </Link>
 
             <h2 className="mt-5 text-2xl">Comments</h2>
+            <div className="max-h-370 overflow-y-auto">
+              {pinDetail?.comments?.map((item) => (
+                <div
+                  className="flex items-center gap-2 mt-5 bg-white rounded-lg"
+                  key={item.comment}
+                >
+                  <img
+                    src={item.postedBy?.image}
+                    alt="user-profile"
+                    className="w-10 h-10 rounded-full cursor-pointer"
+                  />
+                  <div className="flex flex-col">
+                    <p>{item.postedBy?.userName}</p>
+                    <p className="font-bold">{item.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 mt-6 flex-wrap">
+              <Link to={`/user-profile/${user._id}`}>
+                <img
+                  src={user.image}
+                  alt="user-profile"
+                  className="w-10 h-10 rounded-full cursor-pointer"
+                />
+              </Link>
+              <input
+                type="text"
+                className="flex-1 border-gray-100 outline-none border-2 p-2 pl-4 rounded-2xl focus:border-gray-300"
+                placeholder="Add a comment"
+                value={comment}
+                onChange={(e) => {
+                  setComment(e.target.value);
+                }}
+              />
+              <button
+                type="button"
+                onClick={addComment}
+                className="bg-red-500 rounded-full text-white px-6 py-2 font-semibold text-base outline-none"
+              >
+                {addingComment ? "..." : "Post"}
+              </button>
+            </div>
           </div>
         </div>
       )}
