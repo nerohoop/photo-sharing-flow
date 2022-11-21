@@ -53,6 +53,7 @@ const Sidebar = ({ user, closeToggle }) => {
             >
               <img
                 src={category.image}
+                alt="category"
                 className="w-8 h-8 rounded-full shadow-sm"
               />
               {category.name}
